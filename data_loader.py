@@ -2,7 +2,7 @@ import os
 import numpy as np
 import cv2
 import random
-
+import keras.backend as K
 
 def load_path(root_path = '../valid/XR_ELBOW', size = 512):
 	'''
