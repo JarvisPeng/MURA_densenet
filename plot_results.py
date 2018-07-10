@@ -3,7 +3,7 @@ import json
 import numpy as np
 
 
-def plot_cifar10(save=True):
+def plot_MURA(save=True):
 
     with open("./log/experiment_log_MURA.json", "r") as f:
         d = json.load(f)
@@ -30,7 +30,6 @@ def plot_cifar10(save=True):
     ax1.grid(True)
 
     if save:
-        #fig.savefig('./figures/plot_cifar10.svg')
         fig.savefig('./figures/plot_MURA.jpg')
 
     plt.show()
@@ -38,4 +37,4 @@ def plot_cifar10(save=True):
     plt.close()
 
 if __name__ == '__main__':
-    plot_cifar10()
+    plot_MURA()
