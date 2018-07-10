@@ -39,7 +39,10 @@ def load_image(Path = '../valid/XR_ELBOW', size = 512):
 	std = np.std(Images[:, :, :])
 	Images[:, :, :] = (Images[:, :, :] - mean) / std
 	
-	Images = np.expand_dims(Images,axis=3)         #扩展维度3(usebackend tensorflow:aixs=3; theano:axixs=1) 
+	if K.image_data_format() == "channels_first":
+		Images = np.expand_dims(Images,axis=1)		   #扩展维度1
+	if K.image_data_format() == "channels_last":
+		Images = np.expand_dims(Images,axis=3)             #扩展维度3(usebackend tensorflow:aixs=3; theano:axixs=1) 
 	return Images
 
 
