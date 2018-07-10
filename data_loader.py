@@ -12,27 +12,17 @@ def load_path(root_path = '../valid/XR_ELBOW', size = 512):
 	'''
 
 	Path = []
-	
 	labels = []
 	for root,dirs,files in os.walk(root_path): #读取所有图片, os.walk返回迭代器genertor 遍历所有文件
 		for name in files:
 			path_1 = os.path.join(root,name)
 			Path.append(path_1)
-			if root.split('_')[-1]=='positive': #positive标签为1，否则为0；
-				labels+=[1]   #[1,1,1,1]    			#最后一级目录文件patient11880\\study1_negative\\image3.png
+			if root.split('_')[-1]=='positive':	 #positive标签为1，否则为0；
+				labels+=[1]   	          	 #最后一级目录文件patient11880\\study1_negative\\image3.png
 			else:
 			    labels+=[0]
 	print (len(Path))
 	labels = np.asarray(labels)
-
-	# print (Images[30],Images.shape[:])
-	# #print (labels,Path) #测试效果
-	# for i in range(10):
-	# 	index_1 = random.randint(0,len(labels))
-	# 	cv2.imshow( 'label = '+str(labels[index_1]),Images[index_1])
-	# 	cv2.waitKey(0)
-	# 	cv2.destroyAllWindows()
-
 	return Path, labels
 
 def load_image(Path = '../valid/XR_ELBOW', size = 512):
@@ -48,11 +38,9 @@ def load_image(Path = '../valid/XR_ELBOW', size = 512):
 	mean = np.mean(Images[:, :, :])			#normalization
 	std = np.std(Images[:, :, :])
 	Images[:, :, :] = (Images[:, :, :] - mean) / std
-	Images = np.expand_dims(Images,axis=3)         #扩展维度3
+	
+	Images = np.expand_dims(Images,axis=3)         #扩展维度3(usebackend tensorflow:aixs=3; theano:axixs=1) 
 	return Images
-
-
-
 
 
 def randome_rotation_flip(image,size = 512):
