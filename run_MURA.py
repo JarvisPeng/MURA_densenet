@@ -45,53 +45,16 @@ def run_MURA(batch_size,
     ###################
 
     
-    im_size = 320   #测试修改参数 size root_path nb_epoch nb_dense_block  model.save           #/home/tang/datasets/mura-v1.1/train
-    X_train_path, Y_train = data_loader.load_path(root_path = '../train',size = im_size)   ## root_path = '../train
-    X_valid_path, Y_valid = data_loader.load_path(root_path = '../valid', size = im_size)  # root_path = '../valid/XR_ELBOW'
+    im_size = 320   #测试修改参数 size root_path nb_epoch nb_dense_block         
+    X_train_path, Y_train = data_loader.load_path(root_path = '../train',size = im_size)  
+    X_valid_path, Y_valid = data_loader.load_path(root_path = '../valid', size = im_size)  
 
-    X_valid = data_loader.load_image(X_valid_path,im_size)  #提前加载验证集？
+    X_valid = data_loader.load_image(X_valid_path,im_size)  #提前加载验证集
     Y_valid = np.asarray(Y_valid)
-    # nb_classes = len(np.unique(Y_train))
-    nb_classes = 1
-    img_dim = (im_size,im_size,1)#X_train.shape[1:]+(1,) #加上最后一个维度,类型为tuple
+    nb_classes = 1                                
+    img_dim = (im_size,im_size,1)                 #加上最后一个维度,类型为tuple
 
-    '''
-注释掉不用的代码
-    # if K.image_data_format() == "channels_first":
-    #     n_channels = X_train.shape[1]
-    # else:
-    #     n_channels = X_train.shape[-1]
-
-
-    X_train = X_train.astype('float32')
-    X_valid = X_valid.astype('float32')
-
-    # Normalisation
-    X = np.vstack((X_train, X_valid))
-    # 2 cases depending on the image ordering
-    if K.image_data_format() == "channels_first":
-        pass #只用tensorlflow
-        # for i in range(n_channels):
-        #     mean = np.mean(X[:, i, :, :])
-        #     std = np.std(X[:, i, :, :])
-        #     X_train[:, i, :, :] = (X_train[:, i, :, :] - mean) / std
-        #     X_valid[:, i, :, :] = (X_valid[:, i, :, :] - mean) / std
-
-    elif K.image_data_format() == "channels_last":
-            mean = np.mean(X[:, :, :])
-            std = np.std(X[:, :, :])
-            X_train[:, :, :] = (X_train[:, :, :] - mean) / std
-            X_valid[:, :, :] = (X_valid[:, :, :] - mean) / std
-            X_valid = np.expand_dims(X_valid,axis=3)         #扩展维度3
-            # print(X_valid.shape)
-        # for i in range(n_channels):
-        #     mean = np.mean(X[:, :, :, i])
-        #     std = np.std(X[:, :, :, i])
-        #     X_train[:, :, :, i] = (X_train[:, :, :, i] - mean) / std
-        #     X_valid[:, :, :, i] = (X_valid[:, :, :, i] - mean) / std
-    '''
-
-
+    
     ###################
     # Construct model #
     ###################
@@ -171,10 +134,7 @@ def run_MURA(batch_size,
                     (e+1,nb_epoch,i, len(arr_splits),datetime.datetime.now() - start,loss_1,acc_1),
                     '[this_100_batchs-->train_batchs_logloss: {:.5f}, train_batchs_acc:{:.5f}]'.format(loss_2, acc_2))
 
-
-
-        # X_valid = data_loader.load_image(X_valid_path,im_size)
-        # Y_valid = np.asarray(Y_valid)
+        # 运行验证集
         valid_logloss, valid_acc = model.evaluate(X_valid,
                                                 Y_valid,
                                                 verbose=0,
@@ -206,19 +166,18 @@ def run_MURA(batch_size,
             if e <= int(0.25 * nb_epoch)|(record[2]<=best_record[2])&(record[3]<=best_record[3]):#四分之一epoch之后加入差值判定
                 best_record=record                      #记录最小的 [验证集损失函数值,准确率，训练集数据loss差值,acc差值]
                 print('saving the best model:epoch',e+1,best_record)
-                # model.save('save_models/best_MURA_modle.h5')
                 model.save('save_models/best_MURA_modle@epochs{}.h5'.format(e+1))
-        # model.save('save_models/MURA_modle@epochs{}.h5'.format(e+1))
+        model.save('save_models/MURA_modle@epochs{}.h5'.format(e+1))
 
 
 if __name__ == '__main__':
-
+    # 直接使用默认参数
     parser = argparse.ArgumentParser(description='Run MURA experiment')
     parser.add_argument('--batch_size', default=8, type=int, #default=64
                         help='Batch size')
     parser.add_argument('--nb_epoch',  type=int, default=32,#default=30,
                         help='Number of epochs')
-    parser.add_argument('--depth', type=int, default=6*3+4,#default=7,
+    parser.add_argument('--depth', type=int, default=6*3+4,#default=7,    #这个参数不再使用，直接从densenet中的列表设置
                         help='Network depth')
     parser.add_argument('--nb_dense_block', type=int, default=4, #default=1,
                         help='Number of dense blocks')
@@ -241,7 +200,7 @@ if __name__ == '__main__':
     for name, value in parser.parse_args()._get_kwargs():
         print(name, value)
 
-    list_dir = ["./log", "./figures"]
+    list_dir = ["./log", "./figures", "./save_models"]
     for d in list_dir:
         if not os.path.exists(d):
             os.makedirs(d)
